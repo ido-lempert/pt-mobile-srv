@@ -79,7 +79,7 @@ app.get('/transfers', verifyToken, (req, res) => {
 });
 
 app.post('/transfer', verifyToken, (req, res) => {
-    if (! (req.body.toUser && req.body.amount)) res.sendStatus(500);
+    if (! (req.body.toUser && req.body.amount)) return res.sendStatus(500);
 
     // req.user.balance += Number(req.body.amount);
     // req.user.balance -= Number(req.body.amount);
