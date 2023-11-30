@@ -111,7 +111,7 @@ app.post('/login', (req, res) => {
     try {
         const {id, fullName, role} = users.find(u => u.email === req.body.email && u.password === req.body.password);
         jwt.sign({id, fullName, role}, secret, { algorithm: 'HS256'}, (err, token)=>{
-            const data = {msg: 'login success', token};
+            const data = {id, token};
             console.log(req.path, data);
             res.json(data);
         });
