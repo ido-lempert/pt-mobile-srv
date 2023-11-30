@@ -60,23 +60,24 @@ app.use([json(), (req,res,next)=>{
 
 app.get('/users', verifyToken, (req, res) => {
     if (req.user.role === 'admin') {
+        console.log(req.path, users);
         res.json(users);
     } else {
+        console.log(req.path, 403);
         res.sendStatus(403);
     }
-
-    console.log('res', req.path, res.statusCode, res.body);
 });
 
 app.get('/transfers', verifyToken, (req, res) => {
     if (req.user.role === 'admin') {
+        console.log(req.path, transfers);
         res.json(transfers);
     } else {
         const filtered = transfers.filter(transfer => transfer.toUser == req.query.userId || transfer.fromUser == req.query.userId);
-        res.json(filtered ? filtered : []);
+        const data = filtered ? filtered : [];
+        console.log(req.path, data);
+        res.json(data);
     }
-
-    console.log('res', req.path, res.statusCode, res.body);
 });
 
 app.post('/transfer', verifyToken, (req, res) => {
@@ -85,11 +86,10 @@ app.post('/transfer', verifyToken, (req, res) => {
     // req.user.balance += Number(req.body.amount);
     // req.user.balance -= Number(req.body.amount);
 
-    const transfer = addTransfer({...req.body, fromUser: req.user.id});
+    const data = addTransfer({...req.body, fromUser: req.user.id});
 
-    res.json(transfer);
-
-    console.log('res', req.path, res.statusCode, res.body);
+    console.log(req.path, data);
+    res.json(data);
 });
 
 app.post('/register', (req, res) => {
@@ -98,9 +98,10 @@ app.post('/register', (req, res) => {
     const user = addUser(req.body);
 
     const data = {msg: 'register success'};
-    res.json(data);
 
-    console.log('res', req.path, res.statusCode, res.body);
+    console.log(req.path, data);
+
+    res.json(data);
 });
 
 app.post('/login', json(), (req, res) => {
@@ -108,13 +109,13 @@ app.post('/login', json(), (req, res) => {
         const {id, fullName, role} = users.find(u => u.email === req.body.email && u.password === req.body.password);
         jwt.sign({id, fullName, role}, secret, { algorithm: 'HS256'}, (err, token)=>{
             const data = {msg: 'login success', token};
+            console.log(req.path, data);
             res.json(data);
         });
     } catch (e) {
+        console.log(req.path, 500);
         res.sendStatus(500);
     }
-
-    console.log('res', req.path, res.statusCode, res.body);
 });
 
 app.listen(port, () => {
