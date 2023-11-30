@@ -53,6 +53,11 @@ function verifyToken(req, res, next){
     }
 }
 
+app.use([json(), (req,res,next)=>{
+    console.log('***', req.path, req.body);
+    next();
+}]);
+
 app.get('/users', verifyToken, (req, res) => {
     if (req.user.role === 'admin') {
         res.json(users);
@@ -82,7 +87,7 @@ app.post('/transfer', verifyToken, (req, res) => {
     res.json(transfer);
 });
 
-app.post('/register', json(), (req, res) => {
+app.post('/register', (req, res) => {
     if (! (req.body.email && req.body.password && req.body.fullName)) res.sendStatus(500);
 
     const user = addUser(req.body);
@@ -103,7 +108,6 @@ app.post('/login', json(), (req, res) => {
     } catch (e) {
         res.sendStatus(500);
     }
-
 });
 
 app.listen(port, () => {
