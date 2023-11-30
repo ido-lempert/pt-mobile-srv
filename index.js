@@ -26,6 +26,7 @@ function addUser(user){
 }
 
 function addTransfer(transfer){
+    console.log('addTransfer', transfer);
     transfers.push(transfer);
     return transfer;
 }
