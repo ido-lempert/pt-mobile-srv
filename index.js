@@ -64,6 +64,8 @@ app.get('/users', verifyToken, (req, res) => {
     } else {
         res.sendStatus(403);
     }
+
+    console.log('res', req.path, res.statusCode, res.body);
 });
 
 app.get('/transfers', verifyToken, (req, res) => {
@@ -74,6 +76,7 @@ app.get('/transfers', verifyToken, (req, res) => {
         res.json(filtered ? filtered : []);
     }
 
+    console.log('res', req.path, res.statusCode, res.body);
 });
 
 app.post('/transfer', verifyToken, (req, res) => {
@@ -85,6 +88,8 @@ app.post('/transfer', verifyToken, (req, res) => {
     const transfer = addTransfer({...req.body, fromUser: req.user.id});
 
     res.json(transfer);
+
+    console.log('res', req.path, res.statusCode, res.body);
 });
 
 app.post('/register', (req, res) => {
@@ -94,6 +99,8 @@ app.post('/register', (req, res) => {
 
     const data = {msg: 'register success'};
     res.json(data);
+
+    console.log('res', req.path, res.statusCode, res.body);
 });
 
 app.post('/login', json(), (req, res) => {
@@ -106,6 +113,8 @@ app.post('/login', json(), (req, res) => {
     } catch (e) {
         res.sendStatus(500);
     }
+
+    console.log('res', req.path, res.statusCode, res.body);
 });
 
 app.listen(port, () => {
