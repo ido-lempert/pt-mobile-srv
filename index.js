@@ -53,10 +53,13 @@ function verifyToken(req, res, next){
     }
 }
 
-app.use([json(), (req,res,next)=>{
+app.use(json());
+
+app.use((req,res,next) => {
     console.log('***', req.path, req.body);
+
     next();
-}]);
+});
 
 app.get('/users', verifyToken, (req, res) => {
     if (req.user.role === 'admin') {
