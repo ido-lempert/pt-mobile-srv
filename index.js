@@ -96,7 +96,7 @@ app.post('/transfer', verifyToken, (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-    if (! (req.body.email && req.body.password && req.body.fullName)) res.sendStatus(500);
+    if (! (req.body.email && req.body.password && req.body.fullName)) return res.sendStatus(500);
 
     const user = addUser(req.body);
 
@@ -107,7 +107,7 @@ app.post('/register', (req, res) => {
     res.json(data);
 });
 
-app.post('/login', json(), (req, res) => {
+app.post('/login', (req, res) => {
     try {
         const {id, fullName, role} = users.find(u => u.email === req.body.email && u.password === req.body.password);
         jwt.sign({id, fullName, role}, secret, { algorithm: 'HS256'}, (err, token)=>{
