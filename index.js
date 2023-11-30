@@ -25,15 +25,9 @@ function addUser(user){
     return {id: newUser.id, fullName: newUser.fullName, role: newUser.role};
 }
 
-function addTransfer(data){
-    const transfer = {
-        fromUser: 1,
-        toUser: 2,
-        amount: 123,
-        createdAt: (new Date()).toISOString()
-    };
-
+function addTransfer(transfer){
     transfers.push(transfer);
+    return transfer;
 }
 
 function verifyToken(req, res, next){
@@ -89,7 +83,7 @@ app.post('/transfer', verifyToken, (req, res) => {
     // req.user.balance += Number(req.body.amount);
     // req.user.balance -= Number(req.body.amount);
 
-    const data = addTransfer({...req.body, fromUser: req.user.id});
+    const data = addTransfer({...req.body, fromUser: req.user.id, createdAt: (new Date).toISOString()});
 
     console.log(req.path, data);
     res.json(data);
