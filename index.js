@@ -92,9 +92,7 @@ app.post('/register', (req, res) => {
 
     const user = addUser(req.body);
 
-    console.log('user', user);
-
-    const data = {msg: 'register success', token};
+    const data = {msg: 'register success'};
     res.json(data);
 });
 
