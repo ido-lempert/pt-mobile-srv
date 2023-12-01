@@ -1,29 +1,41 @@
+require('dotenv').config();
+
 const express = require('express');
 const { json } = require('body-parser');
 const jwt = require('jsonwebtoken');
 const {users, transfers} = require('./mocks');
+const {Pool} = require("pg");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+const pool = new Pool({
+    user: process.env.DB_USERNAME,
+    host: process.env.DB_HOSTNAME,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+    ssl: true
+});
+
 const secret = 'T0p$ecreTT';
 
-function addUser(user){
-    const lastID = users[users.length-1].id;
-
-    const newUser = {
-        id: lastID + 1,
-        fullName: user.fullName,
-        email: user.email,
-        password: user.password,
-        role: 'customer',
-        balance: Math.floor(Math.random() * 100000)
-    };
-
-    users.push(newUser);
-
-    return {id: newUser.id, fullName: newUser.fullName, role: newUser.role};
-}
+// function addUser(user){
+//     const lastID = users[users.length-1].id;
+//
+//     const newUser = {
+//         id: lastID + 1,
+//         fullName: user.fullName,
+//         email: user.email,
+//         password: user.password,
+//         role: 'customer',
+//         balance: Math.floor(Math.random() * 100000)
+//     };
+//
+//     users.push(newUser);
+//
+//     return {id: newUser.id, fullName: newUser.fullName, role: newUser.role};
+// }
 
 function addTransfer(transfer){
     console.log('addTransfer', transfer);
@@ -66,42 +78,47 @@ app.get('/users', verifyToken, (req, res) => {
     }
 });
 
-app.get('/transfers', verifyToken, (req, res) => {
+app.get('/transfers', verifyToken, async (req, res) => {
+    let result;
     if (req.user.role === 'admin') {
-        console.log(req.path, transfers);
-        res.json(transfers);
+        result = await pool.query('SELECT * FROM transfers RETURNING *');
     } else {
-        const filtered = transfers.filter(transfer => transfer.toUser == req.query.userId || transfer.fromUser == req.query.userId);
-        const data = filtered ? filtered : [];
-        console.log(req.path, data);
-        res.json(data);
+        result = await pool.query('SELECT * FROM transfers WHERE toUser = $1 OR fromUser = $1 RETURNING *', [req.query.userId]);
     }
+
+    res.json(result.rows ? result.rows : []);
 });
 
-app.post('/transfer', verifyToken, (req, res) => {
+app.post('/transfer', verifyToken, async (req, res) => {
     if (! (req.body.toUser && req.body.amount)) return res.sendStatus(500);
 
-    const data = addTransfer({...req.body, fromUser: req.user.id, createdAt: (new Date).toISOString()});
+    const transfer = [req.user.id, req.body.toUser, req.body.amount];
+    const result = await pool.query('INSERT INTO transfers (fromUser, toUser, amount) VALUES ($1,$2,$3) RETURNING *', transfer);
 
-    console.log(req.path, data);
-    res.json(data);
+    console.log(req.path, result.rows[0]);
+    res.json(result.rows[0]);
 });
 
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
     if (! (req.body.email && req.body.password && req.body.fullName)) return res.sendStatus(500);
 
-    const user = addUser(req.body);
+    const user = [req.body.fullName, req.body.email, req.body.password, 'customer', Math.floor(Math.random() * 1000)];
+    const result = await pool.query('INSERT INTO users (fullName, email, password, role, balance) VALUES ($1,$2,$3,$4,$5) RETURNING *', user);
 
     const data = {msg: 'register success'};
 
-    console.log(req.path, data);
+    console.log(req.path, data, result.rows[0]);
 
     res.json(data);
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
+    if (! (req.body.email && req.body.password)) return res.sendStatus(500);
+
     try {
-        const {id, fullName, role} = users.find(u => u.email === req.body.email && u.password === req.body.password);
+        const result = await pool.query('SELECT * FROM users WHERE email = $1 AND password = $2 RETURNING *', [req.body.email, req.body.password]);
+        const {id, fullName, role} = result.rows[0];
+
         jwt.sign({id, fullName, role}, secret, { algorithm: 'HS256'}, (err, token)=>{
             const data = {id, token};
             console.log(req.path, data);
