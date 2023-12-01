@@ -82,9 +82,9 @@ app.get('/users', verifyToken, (req, res) => {
 app.get('/transfers', verifyToken, async (req, res) => {
     let result;
     if (req.user.role === 'admin') {
-        result = await pool.query('SELECT * FROM transfers RETURNING *');
+        result = await pool.query('SELECT * FROM transfers');
     } else {
-        result = await pool.query('SELECT * FROM transfers WHERE toUser = $1 OR fromUser = $1 RETURNING *', [req.query.userId]);
+        result = await pool.query('SELECT * FROM transfers WHERE toUser = $1 OR fromUser = $1', [req.query.userId]);
     }
 
     res.json(result.rows ? result.rows : []);
