@@ -118,6 +118,7 @@ app.post('/login', async (req, res) => {
 
     try {
         const result = await pool.query('SELECT * FROM users WHERE email = $1 AND password = $2 RETURNING *', [req.body.email, req.body.password]);
+        console.log('result.rows[0]', result.rows[0]);
         const {id, fullName, role} = result.rows[0];
 
         jwt.sign({id, fullName, role}, secret, { algorithm: 'HS256'}, (err, token)=>{
