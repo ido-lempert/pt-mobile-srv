@@ -35,19 +35,22 @@ const secret = 'T0p$ecreTT';
 //     return {id: newUser.id, fullName: newUser.fullName, role: newUser.role};
 // }
 
-function addTransfer(transfer){
-    console.log('addTransfer', transfer);
-    transfers.push(transfer);
-    return transfer;
-}
+// function addTransfer(transfer){
+//     console.log('addTransfer', transfer);
+//     transfers.push(transfer);
+//     return transfer;
+// }
 
-function verifyToken(req, res, next){
+const verifyToken = async (req, res, next) => {
     const authorization = req.headers['authorization'];
     if (typeof authorization !== 'undefined') {
         try {
             const parsed = JSON.parse(atob(authorization.split('.')[1]));
-            const user = users.find(u => u.id === parsed.id);
+
+            const result = await pool.query('SELECT * FROM users WHERE id = $1 RETURNING *', [parsed.id]);
+            const user = result.rows[0];
             if (!user) return res.sendStatus(403);
+
             req.user = user;
             next();
         } catch (e) {
