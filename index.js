@@ -37,14 +37,14 @@ function verifyToken(req, res, next){
         try {
             const parsed = JSON.parse(atob(authorization.split('.')[1]));
             const user = users.find(u => u.id === parsed.id);
-            if (!user) res.sendStatus(403);
+            if (!user) return res.sendStatus(403);
             req.user = user;
             next();
         } catch (e) {
-            res.sendStatus(403);
+            return res.sendStatus(403);
         }
     } else {
-        res.sendStatus(403);
+        return res.sendStatus(403);
     }
 }
 
@@ -80,9 +80,6 @@ app.get('/transfers', verifyToken, (req, res) => {
 
 app.post('/transfer', verifyToken, (req, res) => {
     if (! (req.body.toUser && req.body.amount)) return res.sendStatus(500);
-
-    // req.user.balance += Number(req.body.amount);
-    // req.user.balance -= Number(req.body.amount);
 
     const data = addTransfer({...req.body, fromUser: req.user.id, createdAt: (new Date).toISOString()});
 
