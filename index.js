@@ -47,7 +47,7 @@ const verifyToken = async (req, res, next) => {
         try {
             const parsed = JSON.parse(atob(authorization.split('.')[1]));
 
-            const result = await pool.query('SELECT * FROM users WHERE id = $1 RETURNING *', [parsed.id]);
+            const result = await pool.query('SELECT * FROM users WHERE id = $1', [parsed.id]);
             const user = result.rows[0];
             if (!user) return res.sendStatus(403);
 
