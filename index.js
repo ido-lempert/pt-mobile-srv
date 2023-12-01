@@ -91,9 +91,9 @@ app.get('/transfers', verifyToken, async (req, res) => {
 });
 
 app.post('/transfers', verifyToken, async (req, res) => {
-    if (! (req.body.toUser && req.body.amount)) return res.sendStatus(500);
+    if (! (req.body.to_user && req.body.amount)) return res.sendStatus(500);
 
-    const transfer = [req.user.id, req.body.toUser, req.body.amount];
+    const transfer = [req.user.id, req.body.to_user, req.body.amount];
     const result = await pool.query('INSERT INTO transfers (fromUser, toUser, amount) VALUES ($1,$2,$3) RETURNING *', transfer);
 
     console.log(req.path, result.rows[0]);
