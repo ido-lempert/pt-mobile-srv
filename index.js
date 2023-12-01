@@ -90,7 +90,7 @@ app.get('/transfers', verifyToken, async (req, res) => {
     res.json(result.rows ? result.rows : []);
 });
 
-app.post('/transfer', verifyToken, async (req, res) => {
+app.post('/transfers', verifyToken, async (req, res) => {
     if (! (req.body.toUser && req.body.amount)) return res.sendStatus(500);
 
     const transfer = [req.user.id, req.body.toUser, req.body.amount];
