@@ -42,7 +42,7 @@ const verifyToken = async (req, res, next) => {
 app.use(json());
 
 app.use((req,res,next) => {
-    console.log('***', req.path, req.body);
+    console.log('***', req.path, req.query, req.body);
 
     next();
 });
