@@ -3,7 +3,6 @@ require('dotenv').config();
 const express = require('express');
 const { json } = require('body-parser');
 const jwt = require('jsonwebtoken');
-const {users, transfers} = require('./mocks');
 const {Pool} = require("pg");
 
 const app = express();
