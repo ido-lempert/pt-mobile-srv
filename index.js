@@ -19,28 +19,6 @@ const pool = new Pool({
 
 const secret = 'T0p$ecreTT';
 
-// function addUser(user){
-//     const lastID = users[users.length-1].id;
-//
-//     const newUser = {
-//         id: lastID + 1,
-//         fullName: user.fullName,
-//         email: user.email,
-//         password: user.password,
-//         role: 'customer',
-//         balance: Math.floor(Math.random() * 100000)
-//     };
-//
-//     users.push(newUser);
-//
-//     return {id: newUser.id, fullName: newUser.fullName, role: newUser.role};
-// }
-
-// function addTransfer(transfer){
-//     console.log('addTransfer', transfer);
-//     transfers.push(transfer);
-//     return transfer;
-// }
 
 const verifyToken = async (req, res, next) => {
     const authorization = req.headers['authorization'];
