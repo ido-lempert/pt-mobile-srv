@@ -13,7 +13,8 @@ const pool = new Pool({
     user: process.env.DB_USERNAME,
     host: process.env.DB_HOSTNAME,
     database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD
+    password: process.env.DB_PASSWORD,
+    ssl: true,
 });
 
 const secret = 'T0p$ecreTT';
@@ -94,7 +95,7 @@ app.post('/transfers', verifyToken, async (req, res) => {
     if (! (req.body.to_user && req.body.amount)) return res.sendStatus(500);
 
     const transfer = [req.user.id, req.body.to_user, req.body.amount];
-    const result = await pool.query('INSERT INTO transfers (fromUser, toUser, amount) VALUES ($1,$2,$3) RETURNING *', transfer);
+    const result = await pool.query('INSERT INTO transfers (from_user, to_user, amount) VALUES ($1,$2,$3) RETURNING *', transfer);
 
     console.log(req.path, result.rows[0]);
     res.json(result.rows[0]);
