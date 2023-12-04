@@ -63,7 +63,7 @@ app.get('/users', verifyToken, (req, res) => {
 
 app.get('/profile', verifyToken, async (req, res) => {
     try{
-        const result = await pool.query('SELECT balance FROM users WHERE id = $1', [req.query.userId]);
+        const result = await pool.query('SELECT balance FROM users WHERE id = $1', [req.user.id]);
         const data = result.rows[0];
         console.log(req.path, data);
         return res.json(data);
