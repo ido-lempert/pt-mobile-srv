@@ -69,8 +69,9 @@ app.get('/transfers', verifyToken, async (req, res) => {
         } else {
             result = await pool.query('SELECT * FROM transfers WHERE to_user = $1 OR from_user = $2', [req.query.userId, req.query.userId]);
         }
-
-        return res.json(result.rows ? result.rows : []);
+        const data = result.rows ? result.rows : [];
+        console.log(req.path, data);
+        return res.json(data);
     } catch (e) {
         res.sendStatus(500);
     }
